@@ -1,11 +1,12 @@
 class Usuario:
-    def __init__(self, nombre, carnet,carrera):
+    def __init__(self, nombre, carnet, carrera):
         self.nombre = nombre
         self.carnet = carnet
         self.carrera = carrera
 
     def mostrar_info(self):
         return f"Nombre: {self.nombre}, carnet: {self.carnet}, carrera: {self.carrera}"
+
 
 class Libro:
     def __init__(self, titulo, autor, fecha, codigo):
@@ -19,6 +20,7 @@ class Libro:
         print(f"Autor: {self.autor}")
         print(f"Fecha: {self.fecha}")
         print(f"Codigo: {self.codigo}")
+
 
 class ManipulacionUsuario:
     def __init__(self):
@@ -59,14 +61,39 @@ class ManipulacionLibros:
             for i, libro in enumerate(self.lista_libros, start=1):
                 print(f"{i}. {libro.mostrar_info()}")
 
-    def prestamo(self):
-        if not self.lista_libros:
-            print("No hay libros registrados")
 
+class PrestamoDevolucion:
+    def __init__(self):
+        self.lista_libro = []
+
+    def agregar(self):
+        self.lista_libro.append(ManipulacionLibros())
+
+    def mostrar_info(self):
+        if not self.lista_libro:
+            print("No hay libros registrados")
+        else:
+            print("\n Lista de libros:")
+            for i, libro in enumerate(self.lista_libro, start=1):
+                print(f"{i}. {libro.mostrar_info()}")
+
+    def prestamo(self, titulo):
+        if not self.lista_libro:
+            print("No hay libros registrados")
+        else:
+            for libro in self.lista_libro:
+                if libro.titulo.lower() == titulo.lower():
+                    print(f"Se ha prestado el libro {libro.titulo}")
+                    return
+                else:
+                    print(f"El libro {libro.titulo} ya esta prestado")
+                    return
+            print(f"No se ha encontrado el libro {titulo}")
 
 
 registro = ManipulacionUsuario()
 registro2 = ManipulacionLibros()
+registro3 = PrestamoDevolucion()
 opcion = 0
 while opcion != 4:
     print("=== MENU BIBLIOTECA ===")
@@ -85,8 +112,5 @@ while opcion != 4:
             registro.mostrar_info()
         case 2:
             registro2.agregar()
-
-
-
-
-
+        case 3:
+            registro3.agregar()
