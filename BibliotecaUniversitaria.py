@@ -24,76 +24,91 @@ class Libro:
 
 class ManipulacionUsuario:
     def __init__(self):
-        self.lista_usuarios = []
+        self.usuarios = {}
 
     def agregar(self):
-        nombre = input("Nombre del usuario: ")
         carnet = input("Carnet del usuario: ")
+        if carnet in self.usuarios:
+            print("Ese carnet ya está registrado.")
+            return
+        nombre = input("Nombre del usuario: ")
         carrera = input("Carrera del usuario: ")
-        self.lista_usuarios.append(Usuario(nombre, carnet, carrera))
+        self.usuarios[carnet]= {
+            "nombre": nombre,
+            "carrera": carrera
+        }
 
     def mostrar_info(self):
-        if not self.lista_usuarios:
+        if not self.usuarios:
             print("No hay usuarios registrados")
         else:
             print("\n Lista de usuarios:")
-            for i, usuario in enumerate(self.lista_usuarios, start=1):
-                print(f"{i}. {usuario.mostrar_info()}")
+            for carnet, datos in self.usuarios.items():
+                print(f"Carnet: {carnet}, Nombre: {datos['nombre']}, Carrera: {datos['carrera']}")
             print()
 
 
 class ManipulacionLibros:
     def __init__(self):
-        self.lista_libros = []
+        self.libros = {}
 
     def agregar(self):
+        codigo = input("Codigo unico del libro: ")
+        if codigo in self.libros:
+            print("Ese libro ya registrado.")
+            return
         titulo = input("Titulo del libro: ")
         autor = input("Autor del libro: ")
         fecha = input("Fecha de publicacion del libro: ")
-        codigo = input("Codigo unico del libro: ")
-        self.lista_libros.append(Libro(titulo, autor, fecha, codigo))
+        self.libros[codigo] = {
+            "titulo": titulo,
+            "autor": autor,
+            "fecha": fecha,
+            "prestado": False
+        }
+
 
     def mostrar_info(self):
-        if not self.lista_libros:
+        if not self.libros:
             print("No hay libros registrados")
         else:
             print("\n Lista de libros:")
-            for i, libro in enumerate(self.lista_libros, start=1):
-                print(f"{i}. {libro.mostrar_info()}")
+            for codigo, datos in self.libros.items():
+                estado = "Prestado" if datos["prestado"] else "Disponible"
+                print(f"Código: {codigo}, Título: {datos['titulo']},"
+                    f" Autor: {datos['autor']}, Fecha: {datos['fecha']}, Estado: {estado}")
 
 
 class PrestamoDevolucion:
-    def __init__(self):
-        self.lista_libro = []
+    def __init__(self,manipulacion_libros):
+        self.manipulacion_libros = manipulacion_libros
 
-    def agregar(self):
-        self.lista_libro.append(ManipulacionLibros())
-
-    def mostrar_info(self):
-        if not self.lista_libro:
-            print("No hay libros registrados")
+    def agregar(self,codigo):
+        if codigo not in self.manipulacion_libros.libros:
+            print("No se encontró el libro.")
+            return
+        if self.manipulacion_libros.libros[codigo]["prestado"]:
+            print("Ese libro ya está prestado.")
         else:
-            print("\n Lista de libros:")
-            for i, libro in enumerate(self.lista_libro, start=1):
-                print(f"{i}. {libro.mostrar_info()}")
+            self.manipulacion_libros.libros[codigo]["prestado"] = True
+            print(f"Se ha prestado el libro "
+                  f"'{self.manipulacion_libros.libros[codigo]['titulo']}'.")
 
-    def prestamo(self, titulo):
-        if not self.lista_libro:
-            print("No hay libros registrados")
+    def prestamo(self, codigo):
+        if codigo not in self.manipulacion_libros.libros:
+            print("No se encontró el libro.")
+            return
+        if self.manipulacion_libros.libros[codigo]["prestado"]:
+            print("Ese libro ya está prestado.")
         else:
-            for libro in self.lista_libro:
-                if libro.titulo.lower() == titulo.lower():
-                    print(f"Se ha prestado el libro {libro.titulo}")
-                    return
-                else:
-                    print(f"El libro {libro.titulo} ya esta prestado")
-                    return
-            print(f"No se ha encontrado el libro {titulo}")
+            self.manipulacion_libros.libros[codigo]["prestado"] = True
+            print(f"Se ha prestado el libro "
+                  f"'{self.manipulacion_libros.libros[codigo]['titulo']}'.")
 
 
 registro = ManipulacionUsuario()
 registro2 = ManipulacionLibros()
-registro3 = PrestamoDevolucion()
+registro3 = PrestamoDevolucion(registro2)
 opcion = 0
 while opcion != 4:
     print("=== MENU BIBLIOTECA ===")
@@ -112,5 +127,3 @@ while opcion != 4:
             registro.mostrar_info()
         case 2:
             registro2.agregar()
-        case 3:
-            registro3.agregar()
